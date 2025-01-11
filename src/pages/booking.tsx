@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Train, Calendar, Clock, Users } from 'lucide-react';
+import { Train, Calendar, Clock, Users, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../context/authcontext';
 
 interface Booking {
@@ -21,18 +21,37 @@ const Bookings: React.FC = () => {
 
   useEffect(() => {
     const fetchBookings = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/api/bookings/user/${user?.id}`, {
+        const response = await axios.get(`https://irctc-backend-ns9u.onrender.com/api/bookings/user/${user?.id}`, {
           headers: { 
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
         });
-        setBookings(response.data.bookings);
-      } catch (err) {
-        setError('Failed to fetch bookings. Please try again later.');
+        
+        if (response.data.error) {
+          setError(response.data.error);
+        } else if (response.data.bookings) {
+          setBookings(response.data.bookings);
+        } else {
+          setError('Unexpected response format from server');
+        }
+      } catch (err: any) {
         console.error('Error fetching bookings:', err);
+        if (err.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          setError(err.response.data.error || 'An error occurred while fetching bookings');
+        } else if (err.request) {
+          // The request was made but no response was received
+          setError('No response received from server. Please try again later.');
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          setError('An unexpected error occurred. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -40,6 +59,9 @@ const Bookings: React.FC = () => {
 
     if (user?.id && token) {
       fetchBookings();
+    } else {
+      setError('User information is missing. Please log in again.');
+      setLoading(false);
     }
   }, [token, user?.id]);
 
@@ -61,11 +83,13 @@ const Bookings: React.FC = () => {
   if (error) {
     return (
       <div className="text-center py-10">
-        <div className="text-red-500 bg-red-50 p-4 rounded-lg inline-block">
-          <p className="font-medium">{error}</p>
+        <div className="bg-red-50 p-4 rounded-lg inline-block max-w-md">
+          <AlertTriangle className="h-8 w-8 text-red-500 mx-auto mb-4" />
+          <p className="text-red-700 font-medium mb-2">Error</p>
+          <p className="text-red-600">{error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="mt-2 text-sm text-blue-500 hover:text-blue-600"
+            className="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
           >
             Try Again
           </button>

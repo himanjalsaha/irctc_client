@@ -6,7 +6,7 @@ import { AlertCircle, CheckCircle, Loader } from 'lucide-react';
 
 const BookTrain: React.FC = () => {
   const { user, token } = useAuth();
-  const [numSeats, setNumSeats] = useState(1);
+  const [numSeats, setNumSeats] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);

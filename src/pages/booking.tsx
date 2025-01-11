@@ -114,7 +114,7 @@ const Bookings: React.FC = () => {
               </p>
               <p className="flex items-center text-gray-600">
                 <Users className="h-5 w-5 mr-2 flex-shrink-0" />
-                <span>
+                <span className="truncate inline-block max-w-[180px]">
                   Seats: {booking.number_of_seats} ({formatSeatNumbers(booking.seat_numbers)})
                 </span>
               </p>

@@ -38,7 +38,7 @@ const BookTrain: React.FC = () => {
       setIsSuccess(true);
       // Optionally handle redirection or other actions after booking
       setTimeout(() => {
-        navigate('/home'); // Redirect to home page after 2 seconds
+        navigate('/'); // Redirect to home page after 2 seconds
       }, 2000);
     } catch (error) {
       console.error("Error during booking:", error);
